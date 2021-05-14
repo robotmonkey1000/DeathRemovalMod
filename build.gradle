@@ -16,7 +16,7 @@ apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'java'
 
 group = 'deathremoval'
-version = '1.16.3-1.0'
+version = '1.16.3-1.1'
 archivesBaseName = 'deathremoval'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
@@ -106,8 +106,8 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.16.3-34.1.42'
 
-    implementation files('libs/corpse-1.16.3-1.0.6.jar')
-    implementation files('libs/Xaeros_Minimap_20.30.1_Forge_1.16.4.jar')
+    implementation files('libs/corpse-1.16.4-1.0.6.jar')
+    implementation files('libs/Xaeros_Minimap_21.8.0_Forge_1.16.5.jar')
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"
     // compile "some.group:artifact:version"

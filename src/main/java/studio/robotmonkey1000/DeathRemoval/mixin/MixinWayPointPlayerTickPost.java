@@ -1,7 +1,5 @@
 package studio.robotmonkey1000.DeathRemoval.mixin;
 
-import de.maxhenkel.corpse.entities.CorpseEntity;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
@@ -16,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import studio.robotmonkey1000.DeathRemoval.Deathremoval;
 import studio.robotmonkey1000.DeathRemoval.net.DeathRemovalPacketHandler;
 import studio.robotmonkey1000.DeathRemoval.net.RemoveWayPointPacket;
-import xaero.common.XaeroMinimapSession;
 import xaero.common.events.FMLEventHandler;
 
 import java.util.ArrayList;

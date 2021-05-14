@@ -1,8 +1,9 @@
 package studio.robotmonkey1000.DeathRemoval.mixin;
 
 import de.maxhenkel.corpse.Main;
+import de.maxhenkel.corpse.corelib.death.Death;
+import de.maxhenkel.corpse.entities.CorpseBoundingBoxBase;
 import de.maxhenkel.corpse.entities.CorpseEntity;
-import de.maxhenkel.corpse.entities.CorpseInventoryBaseEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
@@ -35,12 +36,15 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 @Mixin(CorpseEntity.class)
-public abstract class MixinCorpseItemTransfer extends CorpseInventoryBaseEntity implements IInventory {
-    @Shadow public abstract UUID getCorpseUUID();
+public abstract class MixinCorpseItemTransfer extends CorpseBoundingBoxBase implements IInventory {
+//    @Shadow public abstract UUID getCorpseUUID();
 
     @Shadow public abstract String getCorpseName();
+    @Shadow protected Death death;
 
     @Shadow private int emptyAge;
+    @Shadow private int age;
+
     private boolean clearWaypoint = false;
     private MixinCorpseItemTransfer(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -49,23 +53,29 @@ public abstract class MixinCorpseItemTransfer extends CorpseInventoryBaseEntity 
     @Inject(at = @At(value = "TAIL"), method="Lde/maxhenkel/corpse/entities/CorpseEntity;func_70071_h_()V", cancellable = true, remap=false)
 //    @Inject(at = @At("HEAD"), method="Lde/maxhenkel/corpse/entities/CorpseEntity;func_70071_h_()V", cancellable = true, remap=false)
     public void func_70106_y(CallbackInfo info) {
-        if ((Integer) Main.SERVER_CONFIG.corpseForceDespawnTime.get() > 0 && this.getCorpseAge() > (Integer)Main.SERVER_CONFIG.corpseForceDespawnTime.get()) {
-            ServerPlayerEntity player = (ServerPlayerEntity) this.world.getPlayerByUuid(this.getCorpseUUID());
+
+        if ((Integer)Main.SERVER_CONFIG.corpseForceDespawnTime.get() > 0 && this.age > (Integer)Main.SERVER_CONFIG.corpseForceDespawnTime.get()) {
+            ServerPlayerEntity player = (ServerPlayerEntity) this.world.getPlayerByUuid(this.death.getPlayerUUID());
             if(player != null) {
                 sendDespawnPacket(player);
+            } else {
+                Deathremoval.LogMessage("Adding Point for when player changes world " + this.world.getDimensionKey().getLocation());
+                Deathremoval.AddRemovalPoint(this.death.getPlayerUUID(),  this.world.getDimensionKey().getLocation(), new Vector3d(this.getPosX(), this.getPosY(), this.getPosZ()));
             }
         } else {
-            if (this.func_191420_l() && this.emptyAge < 0) {
-                this.emptyAge = this.getCorpseAge();
-            } else if (this.func_191420_l() && this.getCorpseAge() - this.emptyAge >= (Integer)Main.SERVER_CONFIG.corpseDespawnTime.get()) {
-                ServerPlayerEntity player = (ServerPlayerEntity) this.world.getPlayerByUuid(this.getCorpseUUID());
+            boolean empty = this.isEmpty();
+            if (empty && this.emptyAge < 0) {
+                this.emptyAge = this.age;
+            } else if (empty && this.age - this.emptyAge >= (Integer)Main.SERVER_CONFIG.corpseDespawnTime.get()) {
+                ServerPlayerEntity player = (ServerPlayerEntity) this.world.getPlayerByUuid(this.death.getPlayerUUID());
                 if(player != null) {
                     sendDespawnPacket(player);
                 } else {
                     Deathremoval.LogMessage("Adding Point for when player changes world " + this.world.getDimensionKey().getLocation());
-                    Deathremoval.AddRemovalPoint(this.getCorpseUUID(),  this.world.getDimensionKey().getLocation(), new Vector3d(this.getPosX(), this.getPosY(), this.getPosZ()));
+                    Deathremoval.AddRemovalPoint(this.death.getPlayerUUID(),  this.world.getDimensionKey().getLocation(), new Vector3d(this.getPosX(), this.getPosY(), this.getPosZ()));
                 }
             }
+
         }
 
     }
@@ -74,10 +84,7 @@ public abstract class MixinCorpseItemTransfer extends CorpseInventoryBaseEntity 
         Deathremoval.LogMessage("Corpse Position on Server: X: " + this.getPosX() + " Y: " + this.getPosY() + " Z: " + this.getPosZ());
         DeathRemovalPacketHandler.INSTANCE.sendTo(new RemoveWayPointPacket(this.getPosX(), this.getPosY(), this.getPosZ()), player.connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
     }
-    @Shadow
-    public int getCorpseAge() {
-        throw new IllegalStateException("Mixin failed to shadow getCorpseAge()");
-    }
+
 
 
 }
