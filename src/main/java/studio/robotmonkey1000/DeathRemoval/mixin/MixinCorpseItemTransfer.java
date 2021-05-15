@@ -4,20 +4,13 @@ import de.maxhenkel.corpse.Main;
 import de.maxhenkel.corpse.corelib.death.Death;
 import de.maxhenkel.corpse.entities.CorpseBoundingBoxBase;
 import de.maxhenkel.corpse.entities.CorpseEntity;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.util.datafix.fixes.PlayerUUID;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.PacketDistributor;
-import org.apache.logging.log4j.LogManager;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -25,19 +18,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import studio.robotmonkey1000.DeathRemoval.Deathremoval;
 import studio.robotmonkey1000.DeathRemoval.net.DeathRemovalPacketHandler;
 import studio.robotmonkey1000.DeathRemoval.net.RemoveWayPointPacket;
-import xaero.common.XaeroMinimapSession;
-import xaero.common.minimap.waypoints.Waypoint;
-import xaero.common.minimap.waypoints.WaypointsManager;
-import xaero.minimap.XaeroMinimap;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.UUID;
-import java.util.function.Supplier;
 
 @Mixin(CorpseEntity.class)
-public abstract class MixinCorpseItemTransfer extends CorpseBoundingBoxBase implements IInventory {
-//    @Shadow public abstract UUID getCorpseUUID();
+public abstract class MixinCorpseItemTransfer extends CorpseBoundingBoxBase {
 
     @Shadow public abstract String getCorpseName();
     @Shadow protected Death death;
@@ -52,7 +35,7 @@ public abstract class MixinCorpseItemTransfer extends CorpseBoundingBoxBase impl
 
     @Inject(at = @At(value = "TAIL"), method="Lde/maxhenkel/corpse/entities/CorpseEntity;func_70071_h_()V", cancellable = true, remap=false)
 //    @Inject(at = @At("HEAD"), method="Lde/maxhenkel/corpse/entities/CorpseEntity;func_70071_h_()V", cancellable = true, remap=false)
-    public void func_70106_y(CallbackInfo info) {
+    public void corpseDespawningCheck(CallbackInfo info) {
 
         if ((Integer)Main.SERVER_CONFIG.corpseForceDespawnTime.get() > 0 && this.age > (Integer)Main.SERVER_CONFIG.corpseForceDespawnTime.get()) {
             ServerPlayerEntity player = (ServerPlayerEntity) this.world.getPlayerByUuid(this.death.getPlayerUUID());
@@ -79,10 +62,16 @@ public abstract class MixinCorpseItemTransfer extends CorpseBoundingBoxBase impl
         }
 
     }
+
     void sendDespawnPacket(ServerPlayerEntity player) {
         Deathremoval.LogMessage("Sending Corpse de-spawn packet to: " + player.getName().getString());
         Deathremoval.LogMessage("Corpse Position on Server: X: " + this.getPosX() + " Y: " + this.getPosY() + " Z: " + this.getPosZ());
         DeathRemovalPacketHandler.INSTANCE.sendTo(new RemoveWayPointPacket(this.getPosX(), this.getPosY(), this.getPosZ()), player.connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
+    }
+
+    @Shadow
+    public boolean isEmpty() {
+        throw new IllegalStateException("Mixin failed to shadow isEmpty()");
     }
 
 
