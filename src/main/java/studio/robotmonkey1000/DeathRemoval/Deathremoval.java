@@ -1,5 +1,6 @@
 package studio.robotmonkey1000.DeathRemoval;
 
+import de.maxhenkel.corpse.entities.CorpseEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
@@ -40,6 +41,7 @@ public class Deathremoval {
     // Directly reference a log4j logger.
     private static final Logger LOGGER = LogManager.getLogger();
     public static HashMap<UUID, HashMap<ResourceLocation, ArrayList<Vector3d>>> waypoints = new HashMap<UUID, HashMap<ResourceLocation, ArrayList<Vector3d>>>();
+    public static HashMap<UUID, CorpseEntity> recentDeathForPlayer = new HashMap<>();
 
     public Deathremoval() {
         // Register the setup method for modloading
@@ -96,6 +98,10 @@ public class Deathremoval {
             playerWayPoints.get(dimName).add(position);
             waypoints.put(uuid, playerWayPoints);
         }
+    }
+
+    public static void AddDeath(UUID playerUUID, CorpseEntity entity) {
+        recentDeathForPlayer.put(playerUUID, entity);
     }
 
 

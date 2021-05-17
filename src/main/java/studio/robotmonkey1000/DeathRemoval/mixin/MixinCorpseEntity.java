@@ -20,7 +20,7 @@ import studio.robotmonkey1000.DeathRemoval.net.DeathRemovalPacketHandler;
 import studio.robotmonkey1000.DeathRemoval.net.RemoveWayPointPacket;
 
 @Mixin(CorpseEntity.class)
-public abstract class MixinCorpseItemTransfer extends CorpseBoundingBoxBase {
+public abstract class MixinCorpseEntity extends CorpseBoundingBoxBase {
 
     @Shadow public abstract String getCorpseName();
     @Shadow protected Death death;
@@ -29,14 +29,13 @@ public abstract class MixinCorpseItemTransfer extends CorpseBoundingBoxBase {
     @Shadow private int age;
 
     private boolean clearWaypoint = false;
-    private MixinCorpseItemTransfer(EntityType<?> entityTypeIn, World worldIn) {
+    private MixinCorpseEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
     }
 
     @Inject(at = @At(value = "TAIL"), method="Lde/maxhenkel/corpse/entities/CorpseEntity;func_70071_h_()V", cancellable = true, remap=false)
 //    @Inject(at = @At("HEAD"), method="Lde/maxhenkel/corpse/entities/CorpseEntity;func_70071_h_()V", cancellable = true, remap=false)
     public void corpseDespawningCheck(CallbackInfo info) {
-
         if ((Integer)Main.SERVER_CONFIG.corpseForceDespawnTime.get() > 0 && this.age > (Integer)Main.SERVER_CONFIG.corpseForceDespawnTime.get()) {
             ServerPlayerEntity player = (ServerPlayerEntity) this.world.getPlayerByUuid(this.death.getPlayerUUID());
             if(player != null) {

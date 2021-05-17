@@ -51,16 +51,22 @@ public class RemoveWayPointPacket {
                 WaypointsManager manager = XaeroMinimapSession.getForPlayer(Minecraft.getInstance().player).getWaypointsManager();
 
                 Deathremoval.LogMessage("Corpse Position on Client: X: " + msg.x + " Y: " + msg.y + " Z: " + msg.z);
+                Waypoint closest = null;
                 for(Waypoint w: wayPoints) {
                     if(w.getDistanceSq(msg.x, msg.y, msg.z) <= 2) {
+//                    if(true) {
                         if(w.getName().equalsIgnoreCase("gui.xaero_deathpoint") || w.getName().equalsIgnoreCase("gui.xaero_deathpoint_old")) {
-
                             Deathremoval.LogMessage("Found Waypoint Removing");
                             wayPoints.remove(w);
                             break;
+//                            if(closest == null || w.getDistanceSq(msg.x, msg.y, msg.z) < closest.getDistanceSq(msg.x, msg.y, msg.z)) {
+//                                closest = w;
+//                            }
                         }
                     }
                 }
+//                Deathremoval.LogMessage("Found Waypoint Removing");
+//                wayPoints.remove(closest);
 
                 try {
                     XaeroMinimap.instance.getSettings().saveWaypoints(manager.getCurrentWorld(manager.getAutoContainerID(), manager.getAutoWorldID()));

@@ -4,7 +4,8 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "deathremoval.refmap.json",
   "mixins": [
-    "MixinCorpseItemTransfer",
+    "MixinCorpseDeathEvents",
+    "MixinCorpseEntity",
     "MixinWayPointManager",
     "MixinWayPointPlayerTickPost"
   ],

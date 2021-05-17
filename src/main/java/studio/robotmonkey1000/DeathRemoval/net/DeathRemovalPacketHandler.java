@@ -17,6 +17,7 @@ public class DeathRemovalPacketHandler {
         int messageID = 0;
         INSTANCE.registerMessage(++messageID, RemoveWayPointPacket.class, RemoveWayPointPacket::encode, RemoveWayPointPacket::new, RemoveWayPointPacket::handle);
         INSTANCE.registerMessage(++messageID, MinimapUpdatedPacket.class, MinimapUpdatedPacket::encode, MinimapUpdatedPacket::new, MinimapUpdatedPacket::handle);
+        INSTANCE.registerMessage(++messageID, DeathpointCreatedPacket.class, DeathpointCreatedPacket::encode, DeathpointCreatedPacket::new, DeathpointCreatedPacket::handle);
     }
 }
 

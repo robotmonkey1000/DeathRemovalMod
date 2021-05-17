@@ -16,7 +16,7 @@ apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'java'
 
 group = 'deathremoval'
-version = '1.16.3-1.3'
+version = '1.16.3-1.4'
 archivesBaseName = 'deathremoval'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
